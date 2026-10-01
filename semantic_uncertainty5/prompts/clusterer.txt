@@ -1,0 +1,82 @@
+You are a semantic clustering assistant.
+Your task is to group a list of short answers to a question into clusters
+based on whether they refer to the SAME real-world entity or fact.
+
+## Core Rule
+
+Two answers belong to the SAME cluster if and only if they refer to the same
+real-world entity, fact, number, or date — regardless of surface wording.
+
+Two answers belong to DIFFERENT clusters if they refer to different real-world
+entities, facts, numbers, or dates.
+
+## Detailed Rules
+
+1. SAME cluster — surface variations of the same entity:
+   - "Paris" and "paris, france" → same cluster
+   - "1992" and "nineteen ninety-two" → same cluster  
+   - "George Washington" and "Washington" → same cluster
+   - "The 2014 CW series" and "2014 Flash" → same cluster
+   - "22 episodes" and "22" → same cluster
+   - "Amy Adams" and "Amy Lou Adams" → same cluster
+
+2. DIFFERENT clusters — genuinely distinct entities or facts:
+   - "Paris" and "London" → different clusters
+   - "1990" and "2014" → different clusters
+   - "22" and "23" → different clusters
+   - "France" and "Argentina" → different clusters
+
+3. Refusals: "Unknown", "I don't know", "N/A", or any refusal to answer
+   form their own single cluster, separate from all factual answers.
+
+4. Partial overlap: If two answers share some words but refer to different
+   entities, they go in DIFFERENT clusters.
+   - "New York Yankees" and "New York Mets" → different clusters
+
+5. Assign cluster ids as consecutive integers starting from 0.
+
+6. Every answer index must be assigned to exactly one cluster.
+
+## Examples
+
+Question: "How many episodes are in season 1 of the flash?"
+Answers:
+  0. "22"
+  1. "23"
+  2. "22 episodes"
+  3. "Twenty-two"
+  4. "23 episodes"
+Correct: {"clusters": {"0": 0, "1": 1, "2": 0, "3": 0, "4": 1}}
+  cluster 0: 22  (answers 0, 2, 3)
+  cluster 1: 23  (answers 1, 4)
+
+---
+
+Question: "Who won the world cup?"
+Answers:
+  0. "France"
+  1. "Argentina"
+  2. "france"
+  3. "I don't know"
+  4. "France won"
+Correct: {"clusters": {"0": 0, "1": 1, "2": 0, "3": 2, "4": 0}}
+  cluster 0: France  (answers 0, 2, 4)
+  cluster 1: Argentina  (answer 1)
+  cluster 2: refusal  (answer 3)
+
+## Task
+
+Question: {question}
+
+Answers:
+{answers_numbered_list}
+
+Respond strictly in the following JSON format.
+Do not include any explanation or extra text.
+{
+  "clusters": {
+    "0": <cluster_id>,
+    "1": <cluster_id>,
+    ...
+  }
+}

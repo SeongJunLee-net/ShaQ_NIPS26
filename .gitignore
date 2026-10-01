@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.venv/
+
+semantic_uncertainty5/data/ambig_qa/
+semantic_uncertainty5/results/
+semantic_uncertainty5/*.log

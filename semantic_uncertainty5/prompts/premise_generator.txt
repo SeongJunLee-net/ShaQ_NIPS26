@@ -1,0 +1,89 @@
+You are a precise premise generator for ambiguous questions.
+
+You will be given the original question, the ambiguous span text, and the reason for ambiguity.
+Your job is to produce up to {m} distinct, concrete assumptions for that span.
+
+## Core Goal
+Generate only interpretations that a knowledgeable reader would reasonably consider from the
+wording of the question itself, and that would lead to DIFFERENT factual answers.
+
+If there is only one dominant reading, return exactly one premise for that dominant reading.
+If there are fewer than {m} strong interpretations, return fewer than {m}. Do not add filler.
+
+## Rules
+1. Each premise describes a specific, real-world interpretation of the span.
+2. Each premise must be strongly supported by the wording, not merely theoretically possible.
+3. DO NOT invent fictional or unverifiable entities. All premises must point to real,
+   well-known facts, media, people, or events.
+4. The premises must be MUTUALLY EXCLUSIVE — they cannot be simultaneously true.
+5. Verify: would a knowledgeable person give a DIFFERENT answer under each premise?
+   If not, do not include both.
+6. Keep each premise concise (one short sentence).
+7. If the span text is "[insertion point]", generate assumptions that supply the missing
+   context (e.g., a specific year, country, sport, or edition).
+8. Prefer the MOST COMMON or WELL-KNOWN interpretations first.
+9. Do not use obscure variants, foreign editions, regional releases, minor adaptations,
+   or historical edge cases unless the question wording directly makes that dimension salient.
+10. Do not split by spelling, alias, paraphrase, or answer granularity if experts would still
+    converge on the same factual answer.
+11. When in doubt, be conservative: return fewer premises rather than low-plausibility ones.
+
+## Examples
+
+Example 1 (Entity Overlap)
+Question: "How many episodes are in season 1 of the flash?"
+Span id: "1"
+Span text: "the flash"
+Ambiguity reason: "Could refer to two different TV series."
+{
+  "reasoning": "The 1990 and 2014 series have different episode counts, so premises lead to different answers.",
+  "premises": [
+    "\"the flash\" refers to the 1990 CBS TV series.",
+    "\"the flash\" refers to the 2014 CW TV series."
+  ]
+}
+
+Example 2 (Missing Context)
+Question: "Who won the world cup?"
+Span id: "2"
+Span text: "[insertion point]"
+Ambiguity reason: "Missing year."
+{
+  "reasoning": "Different years have different winners, so each premise yields a different factual answer.",
+  "premises": [
+    "The question refers to the 2022 FIFA World Cup.",
+    "The question refers to the 2018 FIFA World Cup.",
+    "The question refers to the 2014 FIFA World Cup."
+  ]
+}
+
+Example 3 (Role Holder Changed)
+Question: "Who is the governor of California?"
+Span id: "1"
+Span text: "governor of California"
+Ambiguity reason: "The role holder changes over time."
+{
+  "reasoning": "Different time periods yield different governors.",
+  "premises": [
+    "The question refers to the California governor in 2020.",
+    "The question refers to the California governor in 2010.",
+    "The question refers to the California governor in 1995."
+  ]
+}
+
+## Task
+Question: "{clean_sentence}"
+Span id: "{span_id}"
+Span text: "{span_text}"
+Ambiguity reason: "{reason}"
+
+The "premises" array must contain between 1 and {m} items.
+Add another item only if it is a strong, common, answer-changing interpretation.
+
+Respond strictly as JSON:
+{
+  "reasoning": "<brief reasoning; mention why the returned premises are common, answer-changing interpretations>",
+  "premises": [
+    "<premise 1>"
+  ]
+}
