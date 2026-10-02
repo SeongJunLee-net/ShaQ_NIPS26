@@ -126,3 +126,20 @@ grep -H '"status": "error"' results/ambigqa/*/results.jsonl
 ```
 
 No output means that no error records were found.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Citation
+
+If you find this work useful in your research, please cite:
+
+```bibtex
+@article{lee2026localizing,
+  title={Localizing Input Uncertainty Quantification for Large Language Models via Shapley Values},
+  author={Lee, Seongjun and Yoon, Suwan and Lee, Changhee},
+  journal={arXiv preprint arXiv:2605.28170},
+  year={2026}
+}
+```
